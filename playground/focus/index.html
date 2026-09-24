@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>포커스 타이머</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <a class="back" href="../index.html">← 놀이터</a>
+
+  <section class="card timer">
+    <div class="ring">
+      <svg width="220" height="220">
+        <circle class="track" cx="110" cy="110" r="100"/>
+        <circle class="progress" id="progress" cx="110" cy="110" r="100"/>
+      </svg>
+      <div class="time"><strong id="clock">25:00</strong><span id="mode">집중</span></div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="toggle">시작</button>
+      <button id="reset">초기화</button>
+      <button id="skip">건너뛰기</button>
+    </div>
+    <div class="current" id="current"></div>
+  </section>
+
+  <section class="card">
+    <h2>오늘 할 일 <small id="stats"></small></h2>
+    <form id="add">
+      <input type="text" id="newTask" placeholder="할 일 추가…" autocomplete="off">
+      <button>추가</button>
+    </form>
+    <ul id="list"></ul>
+  </section>
+</main>
+
+<!-- 로드 순서 중요: 뒤 파일이 앞 파일의 전역($, state, save 등)을 사용 -->
+<script src="storage.js"></script>
+<script src="chime.js"></script>
+<script src="timer.js"></script>
+<script src="tasks.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

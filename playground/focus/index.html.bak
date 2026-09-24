@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>포커스 타이머</title>
+<style>
+  :root {
+    --bg: #f6f3ee; --card: #ffffff; --ink: #2b2a28; --muted: #8a857c;
+    --focus: #e0563b; --break: #3b9e7a; --line: #e7e2d9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1b1a18; --card: #262522; --ink: #eeeae3; --muted: #9b958a; --line: #37352f; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font-family: system-ui, "Malgun Gothic", sans-serif;
+    display: flex; justify-content: center; padding: 32px 16px;
+  }
+  main { width: 100%; max-width: 420px; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-top: 16px; }
+  .timer { text-align: center; }
+  .ring { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 10; }
+  .ring .track { stroke: var(--line); }
+  .ring .progress { stroke: var(--mode); stroke-linecap: round; transition: stroke-dashoffset .3s linear; }
+  .ring .time {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .time strong { font-size: 48px; font-variant-numeric: tabular-nums; }
+  .time span { color: var(--mode); font-weight: 600; font-size: 14px; }
+  .controls { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  button {
+    font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 16px; border-radius: 999px; cursor: pointer;
+  }
+  button.primary { background: var(--mode); border-color: var(--mode); color: #fff; min-width: 96px; }
+  .current { margin-top: 12px; font-size: 14px; color: var(--muted); min-height: 20px; }
+  h2 { font-size: 16px; margin: 0 0 12px; display: flex; justify-content: space-between; }
+  h2 small { color: var(--muted); font-weight: 400; }
+  form { display: flex; gap: 8px; margin-bottom: 12px; }
+  input[type=text] {
+    flex: 1; font: inherit; padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li {
+    display: flex; align-items: center; gap: 8px; padding: 8px;
+    border-radius: 8px; cursor: pointer;
+  }
+  li.active { background: color-mix(in srgb, var(--focus) 12%, transparent); }
+  li.done .text { text-decoration: line-through; color: var(--muted); }
+  li .text { flex: 1; }
+  li .tomatoes { font-size: 13px; }
+  li .del { border: none; background: none; color: var(--muted); padding: 0 4px; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../index.html">← 놀이터</a>
+
+  <section class="card timer">
+    <div class="ring">
+      <svg width="220" height="220">
+        <circle class="track" cx="110" cy="110" r="100"/>
+        <circle class="progress" id="progress" cx="110" cy="110" r="100"/>
+      </svg>
+      <div class="time"><strong id="clock">25:00</strong><span id="mode">집중</span></div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="toggle">시작</button>
+      <button id="reset">초기화</button>
+      <button id="skip">건너뛰기</button>
+    </div>
+    <div class="current" id="current"></div>
+  </section>
+
+  <section class="card">
+    <h2>오늘 할 일 <small id="stats"></small></h2>
+    <form id="add">
+      <input type="text" id="newTask" placeholder="할 일 추가…" autocomplete="off">
+      <button>추가</button>
+    </form>
+    <ul id="list"></ul>
+  </section>
+</main>
+
+<script>
+const MODES = {
+  focus: { label: '집중', minutes: 25, color: 'var(--focus)' },
+  break: { label: '휴식', minutes: 5, color: 'var(--break)' },
+};
+const CIRC = 2 * Math.PI * 100;
+const $ = id => document.getElementById(id);
+
+function load() {
+  try { return JSON.parse(localStorage.getItem('focus-state')) || null; } catch { return null; }
+}
+const state = load() || { tasks: [], activeId: null, sessions: 0 };
+function save() {
+  try { localStorage.setItem('focus-state', JSON.stringify(state)); } catch {}
+}
+
+let mode = 'focus';
+let remaining = MODES.focus.minutes * 60;
+let endAt = null;   // timestamp when the running timer ends
+let tick = null;
+
+$('progress').style.strokeDasharray = CIRC;
+
+function renderTimer() {
+  const m = MODES[mode];
+  document.documentElement.style.setProperty('--mode', m.color);
+  const secs = Math.max(0, Math.ceil(remaining));
+  const text = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`;
+  $('clock').textContent = text;
+  $('mode').textContent = m.label;
+  $('toggle').textContent = endAt ? '일시정지' : '시작';
+  $('progress').style.strokeDashoffset = CIRC * (1 - remaining / (m.minutes * 60));
+  document.title = endAt ? `${text} · ${m.label}` : '포커스 타이머';
+  const active = state.tasks.find(t => t.id === state.activeId);
+  $('current').textContent = active ? `지금: ${active.text}` : '할 일을 클릭하면 이 타이머와 연결돼요';
+}
+
+function chime() {
+  try {
+    const ctx = new AudioContext();
+    [660, 880, 1100].forEach((f, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.18);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.5);
+      o.connect(g).connect(ctx.destination);
+      o.start(ctx.currentTime + i * 0.18);
+      o.stop(ctx.currentTime + i * 0.18 + 0.5);
+    });
+  } catch {}
+}
+
+function switchMode(next) {
+  mode = next;
+  remaining = MODES[mode].minutes * 60;
+  endAt = null;
+  clearInterval(tick);
+  renderTimer();
+}
+
+function finish() {
+  chime();
+  if (mode === 'focus') {
+    state.sessions++;
+    const active = state.tasks.find(t => t.id === state.activeId);
+    if (active) active.pomodoros++;
+    save();
+    renderList();
+  }
+  switchMode(mode === 'focus' ? 'break' : 'focus');
+}
+
+$('toggle').onclick = () => {
+  if (endAt) {
+    remaining = (endAt - Date.now()) / 1000;
+    endAt = null;
+    clearInterval(tick);
+  } else {
+    endAt = Date.now() + remaining * 1000;
+    tick = setInterval(() => {
+      remaining = (endAt - Date.now()) / 1000;
+      if (remaining <= 0) finish(); else renderTimer();
+    }, 250);
+  }
+  renderTimer();
+};
+$('reset').onclick = () => switchMode(mode);
+$('skip').onclick = () => switchMode(mode === 'focus' ? 'break' : 'focus');
+
+function renderList() {
+  const list = $('list');
+  list.innerHTML = '';
+  if (!state.tasks.length) list.innerHTML = '<li class="empty">아직 할 일이 없어요</li>';
+  for (const t of state.tasks) {
+    const li = document.createElement('li');
+    li.className = (t.id === state.activeId ? 'active ' : '') + (t.done ? 'done' : '');
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.checked = t.done;
+    box.onclick = e => { e.stopPropagation(); t.done = box.checked; save(); renderList(); };
+    const text = document.createElement('span');
+    text.className = 'text';
+    text.textContent = t.text;
+    const tom = document.createElement('span');
+    tom.className = 'tomatoes';
+    tom.textContent = '🍅'.repeat(t.pomodoros);
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '✕';
+    del.onclick = e => {
+      e.stopPropagation();
+      state.tasks = state.tasks.filter(x => x !== t);
+      if (state.activeId === t.id) state.activeId = null;
+      save(); renderList(); renderTimer();
+    };
+    li.onclick = () => {
+      state.activeId = state.activeId === t.id ? null : t.id;
+      save(); renderList(); renderTimer();
+    };
+    li.append(box, text, tom, del);
+    list.append(li);
+  }
+  const done = state.tasks.filter(t => t.done).length;
+  $('stats').textContent = `완료 ${done}/${state.tasks.length} · 🍅 ${state.sessions}`;
+}
+
+$('add').onsubmit = e => {
+  e.preventDefault();
+  const text = $('newTask').value.trim();
+  if (!text) return;
+  const task = { id: Date.now(), text, done: false, pomodoros: 0 };
+  state.tasks.push(task);
+  if (!state.activeId) state.activeId = task.id;
+  $('newTask').value = '';
+  save(); renderList(); renderTimer();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); $('toggle').click(); }
+});
+
+renderList();
+renderTimer();
+</script>
+</body>
+</html>

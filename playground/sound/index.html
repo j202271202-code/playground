@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사운드 캔버스</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0d14; font-family: system-ui, "Malgun Gothic", sans-serif; }
+  canvas { display: block; touch-action: none; cursor: crosshair; }
+  .hud {
+    position: fixed; top: 16px; left: 16px; right: 16px; display: flex;
+    justify-content: space-between; align-items: center; pointer-events: none; color: #c9cde0;
+  }
+  .hud a, .hud button { pointer-events: auto; }
+  a { color: #8b91ad; text-decoration: none; font-size: 14px; }
+  button {
+    font: inherit; font-size: 13px; background: #ffffff14; color: #c9cde0;
+    border: 1px solid #ffffff22; border-radius: 999px; padding: 6px 12px; cursor: pointer; margin-left: 6px;
+  }
+  button.on { background: #7aa2ff33; border-color: #7aa2ff; }
+  .hint {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #ffffff66; font-size: 18px; pointer-events: none; transition: opacity 1s; text-align: center; padding: 16px;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="hud">
+  <a href="../index.html">← 놀이터</a>
+  <div>
+    <button id="scale">펜타토닉</button>
+    <button id="echo" class="on">에코</button>
+    <button id="clear">지우기</button>
+  </div>
+</div>
+<div class="hint" id="hint">클릭하거나 드래그해 보세요 · 왼쪽→오른쪽은 음높이, 위→아래는 음색</div>
+
+<script>
+const canvas = document.getElementById('c');
+const g = canvas.getContext('2d');
+let W, H;
+function resize() {
+  const dpr = devicePixelRatio || 1;
+  W = innerWidth; H = innerHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#0b0d14'; g.fillRect(0, 0, W, H);
+}
+addEventListener('resize', resize);
+resize();
+
+// Scale intervals in semitones; any note picked from these sounds good together.
+const SCALES = {
+  '펜타토닉': [0, 2, 4, 7, 9],
+  '단조': [0, 3, 5, 7, 10],
+  '일본풍': [0, 1, 5, 7, 8],
+};
+let scaleName = '펜타토닉';
+let echoOn = true;
+
+let audio, master, delay;
+function initAudio() {
+  if (audio) return;
+  audio = new AudioContext();
+  master = audio.createGain();
+  master.gain.value = 0.5;
+  master.connect(audio.destination);
+  delay = audio.createDelay();
+  delay.delayTime.value = 0.33;
+  const feedback = audio.createGain();
+  feedback.gain.value = 0.4;
+  const wet = audio.createGain();
+  wet.gain.value = 0.35;
+  delay.connect(feedback).connect(delay);
+  delay.connect(wet).connect(master);
+}
+
+function noteAt(x) {
+  const steps = SCALES[scaleName];
+  const idx = Math.floor((x / W) * steps.length * 3);   // three octaves across the screen
+  const semis = Math.floor(idx / steps.length) * 12 + steps[idx % steps.length];
+  return { freq: 220 * Math.pow(2, semis / 12), hue: (idx / (steps.length * 3)) * 300 };
+}
+
+function play(freq, y, vel) {
+  const t = audio.currentTime;
+  const o = audio.createOscillator();
+  const env = audio.createGain();
+  const filter = audio.createBiquadFilter();
+  o.type = y < H / 3 ? 'sine' : y < (2 * H) / 3 ? 'triangle' : 'sawtooth';
+  o.frequency.value = freq;
+  filter.type = 'lowpass';
+  filter.frequency.value = 800 + 3000 * (1 - y / H);
+  env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(0.25 * vel, t + 0.01);
+  env.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+  o.connect(filter).connect(env).connect(master);
+  if (echoOn) env.connect(delay);
+  o.start(t);
+  o.stop(t + 1.3);
+}
+
+const ripples = [];
+function trigger(x, y, vel = 1) {
+  initAudio();
+  const { freq, hue } = noteAt(x);
+  play(freq, y, vel);
+  ripples.push({ x, y, r: 4, max: 60 + 140 * vel, hue, life: 1 });
+  document.getElementById('hint').style.opacity = 0;
+}
+
+let down = false, last = null;
+canvas.addEventListener('pointerdown', e => {
+  down = true; last = { x: e.clientX, y: e.clientY };
+  trigger(e.clientX, e.clientY);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!down) return;
+  const d = Math.hypot(e.clientX - last.x, e.clientY - last.y);
+  if (d > 40) {   // spacing between notes while dragging
+    trigger(e.clientX, e.clientY, 0.6);
+    last = { x: e.clientX, y: e.clientY };
+  }
+});
+addEventListener('pointerup', () => down = false);
+
+document.getElementById('scale').onclick = e => {
+  const names = Object.keys(SCALES);
+  scaleName = names[(names.indexOf(scaleName) + 1) % names.length];
+  e.target.textContent = scaleName;
+};
+document.getElementById('echo').onclick = e => {
+  echoOn = !echoOn;
+  e.target.classList.toggle('on', echoOn);
+};
+document.getElementById('clear').onclick = () => { ripples.length = 0; g.fillStyle = '#0b0d14'; g.fillRect(0, 0, W, H); };
+
+function frame() {
+  g.fillStyle = 'rgba(11, 13, 20, 0.08)';   // translucent fill leaves fading trails
+  g.fillRect(0, 0, W, H);
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const r = ripples[i];
+    r.r += (r.max - r.r) * 0.06;
+    r.life -= 0.012;
+    if (r.life <= 0) { ripples.splice(i, 1); continue; }
+    g.strokeStyle = `hsla(${r.hue}, 90%, 65%, ${r.life})`;
+    g.lineWidth = 2;
+    for (let k = 0; k < 3; k++) {
+      g.beginPath();
+      g.arc(r.x, r.y, r.r * (1 - k * 0.25), 0, Math.PI * 2);
+      g.stroke();
+    }
+    g.fillStyle = `hsla(${r.hue}, 90%, 70%, ${r.life * 0.6})`;
+    g.beginPath();
+    g.arc(r.x, r.y, 4, 0, Math.PI * 2);
+    g.fill();
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>

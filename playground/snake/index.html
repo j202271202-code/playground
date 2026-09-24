@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>네온 스네이크</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #07060d; color: #e8e6ff; font-family: system-ui, "Malgun Gothic", sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; box-sizing: border-box; touch-action: none; }
+  .bar { width: min(92vw, 480px); display: flex; justify-content: space-between; align-items: center; font-variant-numeric: tabular-nums; }
+  a { color: #8a86b0; text-decoration: none; font-size: 14px; }
+  .score b { color: #3ff5d0; }
+  .best b { color: #ff4fd8; }
+  .wrap { position: relative; }
+  canvas { display: block; border-radius: 12px; box-shadow: 0 0 40px #3ff5d022, inset 0 0 0 1px #ffffff14; background: #0d0b18; }
+  .overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #07060dcc; border-radius: 12px; text-align: center; gap: 8px;
+  }
+  .overlay h1 { margin: 0; font-size: 32px; color: #3ff5d0; text-shadow: 0 0 16px #3ff5d0; }
+  .overlay p { margin: 0; color: #a9a6cc; font-size: 14px; }
+  .overlay.hidden { display: none; }
+  .legend { font-size: 13px; color: #8a86b0; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <a href="../index.html">← 놀이터</a>
+  <span class="score">점수 <b id="score">0</b></span>
+  <span class="best">최고 <b id="best">0</b></span>
+</div>
+<div class="wrap">
+  <canvas id="c"></canvas>
+  <div class="overlay" id="overlay">
+    <h1 id="title">NEON SNAKE</h1>
+    <p id="sub">스페이스 / 탭으로 시작</p>
+    <p>방향키 · WASD · 스와이프 · P 일시정지</p>
+  </div>
+</div>
+<div class="legend">● 먹이 +10 &nbsp; ★ 슬로모션 +30 &nbsp; ◆ 몸 줄이기 +20</div>
+
+<script>
+const N = 24;   // grid cells per side
+const canvas = document.getElementById('c');
+const g = canvas.getContext('2d');
+let size, cell;
+function resize() {
+  size = Math.min(innerWidth * 0.92, innerHeight - 140, 480);
+  cell = size / N;
+  const dpr = devicePixelRatio || 1;
+  canvas.width = size * dpr; canvas.height = size * dpr;
+  canvas.style.width = canvas.style.height = size + 'px';
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  draw();
+}
+
+let best = 0;
+try { best = +localStorage.getItem('neon-snake-best') || 0; } catch {}
+document.getElementById('best').textContent = best;
+
+let snake, dir, queue, food, power, score, speed, slowUntil, state = 'ready', lastStep = 0, t0 = 0;
+
+function reset() {
+  snake = [{ x: 8, y: 12 }, { x: 7, y: 12 }, { x: 6, y: 12 }];
+  dir = { x: 1, y: 0 };
+  queue = [];
+  score = 0;
+  speed = 130;          // ms per step, shrinks as you eat
+  slowUntil = 0;
+  power = null;
+  food = freeCell();
+  document.getElementById('score').textContent = 0;
+}
+
+function freeCell() {
+  let p;
+  do { p = { x: Math.floor(Math.random() * N), y: Math.floor(Math.random() * N) }; }
+  while (snake.some(s => s.x === p.x && s.y === p.y) || (food && food.x === p.x && food.y === p.y));
+  return p;
+}
+
+function turn(x, y) {
+  const lastDir = queue.length ? queue[queue.length - 1] : dir;
+  if (lastDir.x === -x && lastDir.y === -y) return;   // no reversing into yourself
+  if (lastDir.x === x && lastDir.y === y) return;
+  if (queue.length < 3) queue.push({ x, y });
+}
+
+function blip(freq, dur = 0.08) {
+  try {
+    blip.ctx ||= new AudioContext();
+    const c = blip.ctx, o = c.createOscillator(), v = c.createGain();
+    o.type = 'square'; o.frequency.value = freq;
+    v.gain.setValueAtTime(0.06, c.currentTime);
+    v.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+    o.connect(v).connect(c.destination);
+    o.start(); o.stop(c.currentTime + dur);
+  } catch {}
+}
+
+function addScore(n) {
+  score += n;
+  document.getElementById('score').textContent = score;
+}
+
+function step(now) {
+  if (queue.length) dir = queue.shift();
+  const head = { x: (snake[0].x + dir.x + N) % N, y: (snake[0].y + dir.y + N) % N };   // walls wrap around
+  if (snake.some((s, i) => i < snake.length - 1 && s.x === head.x && s.y === head.y)) return gameOver();
+  snake.unshift(head);
+
+  if (head.x === food.x && head.y === food.y) {
+    addScore(10);
+    speed = Math.max(55, speed - 3);
+    food = freeCell();
+    blip(520);
+    if (!power && Math.random() < 0.25) {
+      power = { ...freeCell(), kind: Math.random() < 0.5 ? 'slow' : 'trim', until: now + 6000 };
+    }
+  } else {
+    snake.pop();
+  }
+
+  if (power && head.x === power.x && head.y === power.y) {
+    if (power.kind === 'slow') { addScore(30); slowUntil = now + 5000; blip(300, 0.3); }
+    else { addScore(20); snake.length = Math.max(3, Math.ceil(snake.length / 2)); blip(880, 0.2); }
+    power = null;
+  }
+  if (power && now > power.until) power = null;
+}
+
+function gameOver() {
+  state = 'over';
+  blip(140, 0.4);
+  if (score > best) {
+    best = score;
+    try { localStorage.setItem('neon-snake-best', best); } catch {}
+    document.getElementById('best').textContent = best;
+  }
+  showOverlay('GAME OVER', `점수 ${score}${score === best && score > 0 ? ' · 신기록!' : ''} — 스페이스 / 탭으로 다시`);
+}
+
+function showOverlay(title, sub) {
+  document.getElementById('title').textContent = title;
+  document.getElementById('sub').textContent = sub;
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+function start() {
+  if (state === 'over' || state === 'ready') reset();
+  state = 'play';
+  document.getElementById('overlay').classList.add('hidden');
+}
+
+function togglePause() {
+  if (state === 'play') { state = 'paused'; showOverlay('일시정지', 'P / 스페이스로 계속'); }
+  else if (state === 'paused') start();
+}
+
+function glowRect(x, y, color, pad = 1) {
+  g.shadowColor = color; g.shadowBlur = 12; g.fillStyle = color;
+  g.beginPath();
+  g.roundRect(x * cell + pad, y * cell + pad, cell - pad * 2, cell - pad * 2, cell * 0.3);
+  g.fill();
+}
+
+function draw(now = 0) {
+  if (!snake) return;
+  g.shadowBlur = 0;
+  g.fillStyle = '#0d0b18'; g.fillRect(0, 0, size, size);
+  g.fillStyle = '#ffffff08';
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) g.fillRect(i * cell + cell / 2 - 1, j * cell + cell / 2 - 1, 2, 2);
+
+  const pulse = 0.5 + 0.5 * Math.sin(now / 150);
+  g.shadowColor = '#ff4fd8'; g.shadowBlur = 10 + 10 * pulse; g.fillStyle = '#ff4fd8';
+  g.beginPath(); g.arc((food.x + 0.5) * cell, (food.y + 0.5) * cell, cell * 0.32, 0, Math.PI * 2); g.fill();
+
+  if (power) {
+    g.shadowColor = g.fillStyle = power.kind === 'slow' ? '#ffd23f' : '#6aa8ff';
+    g.shadowBlur = 16;
+    g.font = `${cell * 0.9}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.globalAlpha = power.until - now < 2000 ? 0.4 + 0.6 * pulse : 1;   // blink before expiring
+    g.fillText(power.kind === 'slow' ? '★' : '◆', (power.x + 0.5) * cell, (power.y + 0.55) * cell);
+    g.globalAlpha = 1;
+  }
+
+  const slow = now < slowUntil;
+  snake.forEach((s, i) => {
+    const hue = slow ? 50 : 168 + i * 3;
+    glowRect(s.x, s.y, `hsl(${hue}, 95%, ${i === 0 ? 70 : 58 - Math.min(i, 20)}%)`, i === 0 ? 0.5 : 1.5);
+  });
+}
+
+function loop(now) {
+  const interval = now < slowUntil ? speed * 1.8 : speed;
+  if (state === 'play' && now - lastStep >= interval) { lastStep = now; step(now); }
+  draw(now);
+  requestAnimationFrame(loop);
+}
+
+const KEYS = {
+  ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1],
+  ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
+};
+addEventListener('keydown', e => {
+  if (KEYS[e.code]) { e.preventDefault(); if (state === 'play') turn(...KEYS[e.code]); }
+  else if (e.code === 'Space') { e.preventDefault(); state === 'play' ? togglePause() : start(); }
+  else if (e.code === 'KeyP') togglePause();
+});
+
+let touch = null;
+addEventListener('touchstart', e => { touch = e.touches[0]; }, { passive: true });
+addEventListener('touchend', e => {
+  if (!touch) return;
+  const t = e.changedTouches[0], dx = t.clientX - touch.clientX, dy = t.clientY - touch.clientY;
+  touch = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) { if (state !== 'play') start(); return; }
+  if (state !== 'play') return;
+  Math.abs(dx) > Math.abs(dy) ? turn(Math.sign(dx), 0) : turn(0, Math.sign(dy));
+});
+document.getElementById('overlay').addEventListener('click', () => { if (state !== 'play') start(); });
+
+addEventListener('resize', resize);
+reset();
+resize();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

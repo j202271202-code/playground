@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>작은 놀이터</title>
+<style>
+  :root { --bg: #f6f3ee; --card: #fff; --ink: #2b2a28; --muted: #8a857c; --line: #e7e2d9; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1b1a18; --card: #262522; --ink: #eeeae3; --muted: #9b958a; --line: #37352f; }
+  }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: system-ui, "Malgun Gothic", sans-serif; padding: 48px 16px; box-sizing: border-box; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  p.lead { margin: 0 0 32px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  a.card {
+    display: block; text-decoration: none; color: inherit; background: var(--card);
+    border: 1px solid var(--line); border-radius: 16px; padding: 20px; transition: transform .15s, box-shadow .15s;
+  }
+  a.card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px #0000001a; }
+  .emoji { font-size: 32px; }
+  .tag { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; }
+  h2 { margin: 4px 0 8px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<main>
+  <h1>작은 놀이터</h1>
+  <p class="lead">설치 없이 브라우저에서 바로 실행되는 세 가지 미니 프로젝트</p>
+  <div class="grid">
+    <a class="card" href="focus/index.html">
+      <div class="emoji">🍅</div>
+      <div class="tag">생산성</div>
+      <h2>포커스 타이머</h2>
+      <p>25분 집중 + 5분 휴식. 할 일마다 끝낸 세션 수가 쌓이고, 목록은 자동 저장돼요.</p>
+    </a>
+    <a class="card" href="sound/index.html">
+      <div class="emoji">🎨</div>
+      <div class="tag">창의적 장난감</div>
+      <h2>사운드 캔버스</h2>
+      <p>클릭하고 드래그하면 빛과 소리가 퍼져요. 어디를 눌러도 음계에 맞게 울려요.</p>
+    </a>
+    <a class="card" href="snake/index.html">
+      <div class="emoji">🐍</div>
+      <div class="tag">게임</div>
+      <h2>네온 스네이크</h2>
+      <p>점점 빨라지는 스네이크. 슬로모션 ★과 몸 줄이기 ◆ 아이템, 최고 점수 저장.</p>
+    </a>
+  </div>
+</main>
+</body>
+</html>
