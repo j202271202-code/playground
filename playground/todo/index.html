@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>할 일 목록</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <a class="back" href="../index.html">← 놀이터</a>
+
+  <section class="card">
+    <h1>✅ 할 일 목록</h1>
+    <form id="add">
+      <input type="text" id="newTask" placeholder="할 일을 입력하세요…" autocomplete="off">
+      <button>추가</button>
+    </form>
+
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">전체</button>
+      <button class="filter" data-filter="active">진행중</button>
+      <button class="filter" data-filter="done">완료</button>
+    </div>
+
+    <ul id="list"></ul>
+
+    <div class="footer">
+      <span id="stats"></span>
+      <button id="clearDone">완료 항목 지우기</button>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
