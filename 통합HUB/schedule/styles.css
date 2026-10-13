@@ -1,0 +1,198 @@
+/* 일정관리 - 통합HUB 공통 ../styles.css 위에 얹는 추가 스타일 */
+
+/* ===== 카테고리 색상 토큰 (라이트 기본값) ===== */
+:root {
+  --cat-work: var(--accent);
+  --cat-personal: #1baf7a;
+  --cat-appointment: #eb6834;
+  --cat-health: var(--success);
+  --cat-etc: #e87ba4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cat-personal: #199e70;
+    --cat-appointment: #d95926;
+    --cat-etc: #d55181;
+  }
+}
+:root[data-theme="dark"] {
+  --cat-personal: #199e70;
+  --cat-appointment: #d95926;
+  --cat-etc: #d55181;
+}
+
+.cat-dot--work { background: var(--cat-work); }
+.cat-dot--personal { background: var(--cat-personal); }
+.cat-dot--appointment { background: var(--cat-appointment); }
+.cat-dot--health { background: var(--cat-health); }
+.cat-dot--etc { background: var(--cat-etc); }
+
+/* ===== 이번 달 일정 전체 (항상 보이는 카드) ===== */
+.month-list-card { margin-bottom: 18px; }
+.month-list-card .event-list {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+/* ===== 삭제 버튼 (일정 항목 공통) ===== */
+.event-delete-btn {
+  border: none; background: none; color: var(--text-secondary);
+  font-size: 15px; padding: 4px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.event-delete-btn:hover { color: var(--danger); background: var(--accent-soft); }
+
+/* ===== 충돌 경고 ===== */
+.conflict-warning {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(239,68,68,0.1);
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== 일정 추가 폼 ===== */
+.event-add-form { margin-bottom: 16px; }
+.event-add-form .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.event-add-form input, .event-add-form select {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+.event-add-form #eventStart, .event-add-form #eventEnd { width: 96px; }
+.time-tilde { color: var(--text-secondary); font-size: 13px; }
+.event-add-form #eventTitle { flex: 1; min-width: 160px; }
+.event-add-form #eventMemo { flex: 1; min-width: 160px; }
+.event-add-form button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 타임라인 (일별 뷰) ===== */
+.timeline-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  background: var(--bg);
+}
+.timeline {
+  position: relative;
+  height: 960px; /* 24h * 40px */
+}
+.timeline-hour {
+  position: absolute;
+  left: 0; right: 0;
+  height: 40px;
+  border-top: 1px solid var(--border);
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  padding: 2px 8px;
+}
+.timeline-now-line {
+  position: absolute;
+  left: 44px; right: 0;
+  height: 2px;
+  background: var(--danger);
+  z-index: 3;
+}
+.timeline-now-line::before {
+  content: "";
+  position: absolute;
+  left: -5px; top: -4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+}
+.timeline-event {
+  position: absolute;
+  left: 50px; right: 10px;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px var(--bg-elevated);
+}
+.timeline-event .te-time { font-weight: 500; opacity: 0.85; font-size: 10.5px; display: block; }
+.timeline-event.is-point {
+  left: 50px;
+  border-radius: 999px;
+  width: 8px; height: 8px;
+  padding: 0;
+}
+
+/* ===== 일정 리스트 ===== */
+.event-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.event-time-badge {
+  flex-shrink: 0;
+  min-width: 70px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+#monthEventList .event-time-badge { min-width: 92px; }
+.event-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.event-main .event-title { font-weight: 600; }
+.event-main .event-memo { font-size: 12px; color: var(--text-secondary); }
+.event-cat-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 7px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* ===== 월별: 카테고리 캘린더 점 ===== */
+.calendar-grid.cat-cal .calendar-day .day-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.cat-legend { justify-content: flex-start; gap: 14px; flex-wrap: wrap; }
+.cat-legend .cat-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+.cat-legend .cat-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* ===== 연간 요약 ===== */
+.year-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.year-summary-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.year-summary-item .ys-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.year-summary-item .ys-value { font-size: 20px; font-weight: 700; }

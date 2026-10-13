@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>골프 기록 - 통합HUB</title>
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">H</span>
+        <span class="brand-name">통합HUB</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">도구</div>
+        <a class="nav-item" href="../schedule/index.html">
+          <span class="nav-icon">📅</span>
+          <span>일정관리</span>
+        </a>
+        <a class="nav-item" href="../index.html">
+          <span class="nav-icon">✓</span>
+          <span>할 일 관리</span>
+        </a>
+        <a class="nav-item" href="../marathon/index.html">
+          <span class="nav-icon">🏃</span>
+          <span>마라톤 훈련일지</span>
+        </a>
+        <a class="nav-item is-active" href="index.html">
+          <span class="nav-icon">⛳</span>
+          <span>골프 기록</span>
+        </a>
+        <button class="nav-item is-disabled" disabled>
+          <span class="nav-icon">＋</span>
+          <span>새 도구 (예정)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="todayLabel"></span>
+      </div>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="main">
+
+      <!-- 상단 바 -->
+      <header class="topbar">
+        <div>
+          <h1 id="greeting">⛳ 골프 기록</h1>
+          <p class="subtitle" id="dateSubtitle"></p>
+        </div>
+        <div class="view-switch" role="tablist">
+          <button class="view-btn is-active" data-view="daily">일별</button>
+          <button class="view-btn" data-view="monthly">월별</button>
+          <button class="view-btn" data-view="yearly">연간</button>
+        </div>
+      </header>
+
+      <!-- 통계 타일 -->
+      <section class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 라운드</div>
+          <div class="stat-value" id="statMonthRounds">0 회</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 평균 타수</div>
+          <div class="stat-value" id="statMonthAvg">-</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">통산 베스트 스코어</div>
+          <div class="stat-value" id="statBest">-</div>
+          <div class="stat-sub" id="statBestMeta"></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">최근 라운드 변화</div>
+          <div class="stat-value" id="statTrend">-</div>
+          <div class="stat-sub" id="statTrendMeta"></div>
+        </div>
+      </section>
+
+      <!-- 라운드 회고 (항상 보이는 카드) -->
+      <section class="panel-card review-card">
+        <div class="panel-card-header">
+          <h2>📝 라운드 회고 — 잘된 점 / 안된 점 모아보기</h2>
+          <button class="ghost-btn" id="toggleReviewAll">전체 보기</button>
+        </div>
+        <ul class="review-list" id="reviewList"></ul>
+        <p class="empty-state" id="reviewEmpty" hidden>아직 기록이 없어요. 라운드를 추가하면 여기 모여요.</p>
+      </section>
+
+      <!-- 일별 뷰 -->
+      <section class="view-panel is-active" id="view-daily">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevDay">‹</button>
+            <h2 id="dailyTitle">오늘</h2>
+            <button class="nav-arrow" id="nextDay">›</button>
+          </div>
+
+          <form class="round-add-form" id="roundAddForm">
+            <div class="form-row">
+              <input type="time" id="roundTime" />
+              <input type="text" id="roundCourse" placeholder="구장 이름" autocomplete="off" required />
+              <select id="roundHoles">
+                <option value="18">18홀</option>
+                <option value="9">9홀</option>
+              </select>
+              <input type="number" id="roundPar" placeholder="파(기준타수)" value="72" min="1" required />
+              <input type="number" id="roundScore" placeholder="타수" min="1" required />
+            </div>
+            <div class="form-row">
+              <input type="text" id="roundGood" placeholder="잘된 점 (예: 드라이버 방향성 좋았음)" autocomplete="off" />
+              <input type="text" id="roundBad" placeholder="안된 점 (예: 3퍼트 2번, 벙커 탈출 실패)" autocomplete="off" />
+            </div>
+            <div class="form-row">
+              <input type="text" id="roundMemo" placeholder="메모 (선택)" autocomplete="off" />
+              <button type="submit">라운드 추가</button>
+            </div>
+          </form>
+
+          <ul class="round-list" id="roundList"></ul>
+          <p class="empty-state" id="roundEmpty" hidden>이 날은 라운드 기록이 없어요.</p>
+        </div>
+      </section>
+
+      <!-- 월별 뷰 -->
+      <section class="view-panel" id="view-monthly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevMonth">‹</button>
+            <h2 id="calendarTitle">2026년 10월</h2>
+            <button class="nav-arrow" id="nextMonth">›</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div class="calendar-grid score-cal" id="calendarGrid"></div>
+          <div class="legend-row score-legend">
+            <span><span class="score-dot score-dot--good"></span> 파 이하</span>
+            <span><span class="score-dot score-dot--over"></span> 오버파</span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>라운드별 스코어 추이 (이번 달)</h2>
+          <div class="chart-wrap" id="monthLineChart"></div>
+        </div>
+      </section>
+
+      <!-- 연간 뷰 -->
+      <section class="view-panel" id="view-yearly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevYear">‹</button>
+            <h2 id="yearTitle">2026년</h2>
+            <button class="nav-arrow" id="nextYear">›</button>
+          </div>
+          <div class="chart-wrap" id="yearBarChart"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>연간 요약</h2>
+          <div class="year-summary-grid" id="yearSummary"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

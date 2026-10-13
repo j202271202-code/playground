@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>통합HUB</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">H</span>
+        <span class="brand-name">통합HUB</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">도구</div>
+        <a class="nav-item" href="schedule/index.html">
+          <span class="nav-icon">📅</span>
+          <span>일정관리</span>
+        </a>
+        <a class="nav-item is-active" href="index.html">
+          <span class="nav-icon">✓</span>
+          <span>할 일 관리</span>
+        </a>
+        <a class="nav-item" href="marathon/index.html">
+          <span class="nav-icon">🏃</span>
+          <span>마라톤 훈련일지</span>
+        </a>
+        <a class="nav-item" href="golf/index.html">
+          <span class="nav-icon">⛳</span>
+          <span>골프 기록</span>
+        </a>
+        <button class="nav-item is-disabled" disabled>
+          <span class="nav-icon">＋</span>
+          <span>새 도구 (예정)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="todayLabel"></span>
+      </div>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="main">
+
+      <!-- 상단 바 -->
+      <header class="topbar">
+        <div>
+          <h1 id="greeting">안녕하세요 👋</h1>
+          <p class="subtitle" id="dateSubtitle"></p>
+        </div>
+        <div class="view-switch" role="tablist">
+          <button class="view-btn is-active" data-view="daily">일별</button>
+          <button class="view-btn" data-view="monthly">월별</button>
+        </div>
+      </header>
+
+      <!-- 통계 타일 -->
+      <section class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">오늘 할 일</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">완료</div>
+          <div class="stat-value" id="statDone">0</div>
+        </div>
+        <div class="stat-tile stat-tile--progress">
+          <div class="stat-label">오늘 진행률</div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <span class="progress-pct" id="progressPct">0%</span>
+          </div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 완료율</div>
+          <div class="stat-value" id="statMonth">0%</div>
+        </div>
+      </section>
+
+      <!-- 일별 뷰 -->
+      <section class="view-panel is-active" id="view-daily">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2 id="dailyPanelTitle">오늘의 할 일</h2>
+          </div>
+
+          <form class="todo-add-form" id="dailyAddForm">
+            <input type="text" id="dailyInput" placeholder="할 일을 입력하고 Enter" autocomplete="off" />
+            <select id="dailyPriority">
+              <option value="high">🔴 높음</option>
+              <option value="mid" selected>🟡 보통</option>
+              <option value="low">🟢 낮음</option>
+            </select>
+            <button type="submit">추가</button>
+          </form>
+
+          <ul class="todo-list" id="dailyList"></ul>
+          <p class="empty-state" id="dailyEmpty" hidden>오늘은 할 일이 없어요. 위에서 추가해보세요 ✨</p>
+        </div>
+      </section>
+
+      <!-- 월별 뷰 -->
+      <section class="view-panel" id="view-monthly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevMonth">‹</button>
+            <h2 id="calendarTitle">2026년 10월</h2>
+            <button class="nav-arrow" id="nextMonth">›</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2 id="selectedDayTitle">날짜를 선택하세요</h2>
+          </div>
+
+          <form class="todo-add-form" id="monthlyAddForm">
+            <input type="text" id="monthlyInput" placeholder="할 일을 입력하고 Enter" autocomplete="off" />
+            <select id="monthlyPriority">
+              <option value="high">🔴 높음</option>
+              <option value="mid" selected>🟡 보통</option>
+              <option value="low">🟢 낮음</option>
+            </select>
+            <button type="submit">추가</button>
+          </form>
+
+          <ul class="todo-list" id="monthlyList"></ul>
+          <p class="empty-state" id="monthlyEmpty" hidden>이 날은 할 일이 없어요.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>마라톤 훈련일지 - 통합HUB</title>
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">H</span>
+        <span class="brand-name">통합HUB</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">도구</div>
+        <a class="nav-item" href="../schedule/index.html">
+          <span class="nav-icon">📅</span>
+          <span>일정관리</span>
+        </a>
+        <a class="nav-item" href="../index.html">
+          <span class="nav-icon">✓</span>
+          <span>할 일 관리</span>
+        </a>
+        <a class="nav-item is-active" href="index.html">
+          <span class="nav-icon">🏃</span>
+          <span>마라톤 훈련일지</span>
+        </a>
+        <a class="nav-item" href="../golf/index.html">
+          <span class="nav-icon">⛳</span>
+          <span>골프 기록</span>
+        </a>
+        <button class="nav-item is-disabled" disabled>
+          <span class="nav-icon">＋</span>
+          <span>새 도구 (예정)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="todayLabel"></span>
+      </div>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="main">
+
+      <!-- 상단 바 -->
+      <header class="topbar">
+        <div>
+          <h1 id="greeting">🏃 마라톤 훈련일지</h1>
+          <p class="subtitle" id="dateSubtitle"></p>
+        </div>
+        <div class="view-switch" role="tablist">
+          <button class="view-btn is-active" data-view="daily">일별</button>
+          <button class="view-btn" data-view="monthly">월별</button>
+          <button class="view-btn" data-view="yearly">연간</button>
+        </div>
+      </header>
+
+      <!-- 통계 타일 -->
+      <section class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 누적 거리</div>
+          <div class="stat-value" id="statMonthDist">0 km</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 평균 페이스</div>
+          <div class="stat-value" id="statMonthPace">-</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">최근 체중</div>
+          <div class="stat-value" id="statWeight">- kg</div>
+          <div class="stat-sub" id="statWeightDelta"></div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">다음 대회</div>
+          <div class="stat-value" id="statNextRace">-</div>
+          <div class="stat-sub" id="statNextRaceDate"></div>
+        </div>
+      </section>
+
+      <!-- 대회 일정 (항상 보이는 카드) -->
+      <section class="panel-card race-card">
+        <div class="panel-card-header">
+          <h2>🏁 대회 일정</h2>
+          <button class="ghost-btn" id="toggleRaceForm">+ 대회 추가</button>
+        </div>
+
+        <form class="race-add-form" id="raceAddForm" hidden>
+          <input type="text" id="raceName" placeholder="대회 이름 (예: 춘천마라톤)" autocomplete="off" required />
+          <input type="date" id="raceDate" required />
+          <select id="raceDistance">
+            <option value="풀코스">풀코스 (42.195km)</option>
+            <option value="하프">하프 (21.0975km)</option>
+            <option value="10K">10K</option>
+            <option value="5K">5K</option>
+            <option value="기타">기타</option>
+          </select>
+          <input type="text" id="raceNote" placeholder="메모 (목표 시간 등, 선택)" autocomplete="off" />
+          <button type="submit">추가</button>
+        </form>
+
+        <ul class="race-list" id="raceList"></ul>
+        <p class="empty-state" id="raceEmpty" hidden>등록된 대회가 없어요. 위에서 추가해보세요.</p>
+      </section>
+
+      <!-- 일별 뷰 -->
+      <section class="view-panel is-active" id="view-daily">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevDay">‹</button>
+            <h2 id="dailyTitle">오늘</h2>
+            <button class="nav-arrow" id="nextDay">›</button>
+          </div>
+
+          <div class="weight-row">
+            <label for="weightInput">체중 (kg)</label>
+            <input type="number" id="weightInput" step="0.1" placeholder="예: 68.5" />
+            <button type="button" id="weightSaveBtn">저장</button>
+            <span class="weight-saved-hint" id="weightSavedHint"></span>
+          </div>
+
+          <form class="run-add-form" id="runAddForm">
+            <input type="number" id="runDistance" step="0.01" min="0" placeholder="거리(km)" required />
+            <input type="text" id="runDuration" placeholder="시간 (예: 45:30)" required />
+            <select id="runType">
+              <option value="easy">쉬운 달리기</option>
+              <option value="long">장거리</option>
+              <option value="interval">인터벌/스피드</option>
+              <option value="race">대회</option>
+              <option value="etc">기타</option>
+            </select>
+            <input type="text" id="runMemo" placeholder="메모 (선택)" autocomplete="off" />
+            <button type="submit">기록 추가</button>
+          </form>
+
+          <ul class="run-list" id="runList"></ul>
+          <p class="empty-state" id="runEmpty" hidden>이 날은 기록이 없어요.</p>
+        </div>
+      </section>
+
+      <!-- 월별 뷰 -->
+      <section class="view-panel" id="view-monthly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevMonth">‹</button>
+            <h2 id="calendarTitle">2026년 10월</h2>
+            <button class="nav-arrow" id="nextMonth">›</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div class="calendar-grid heatmap" id="calendarGrid"></div>
+          <div class="legend-row">
+            <span class="legend-label">적음</span>
+            <span class="legend-swatch" style="--pct:0"></span>
+            <span class="legend-swatch" style="--pct:25"></span>
+            <span class="legend-swatch" style="--pct:50"></span>
+            <span class="legend-swatch" style="--pct:75"></span>
+            <span class="legend-swatch" style="--pct:100"></span>
+            <span class="legend-label">많음</span>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>일별 거리 (이번 달)</h2>
+          <div class="chart-wrap" id="monthBarChart"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>체중 변화 (이번 달)</h2>
+          <div class="chart-wrap" id="monthWeightChart"></div>
+        </div>
+      </section>
+
+      <!-- 연간 뷰 -->
+      <section class="view-panel" id="view-yearly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevYear">‹</button>
+            <h2 id="yearTitle">2026년</h2>
+            <button class="nav-arrow" id="nextYear">›</button>
+          </div>
+          <div class="chart-wrap" id="yearBarChart"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>연간 요약</h2>
+          <div class="year-summary-grid" id="yearSummary"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

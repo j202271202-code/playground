@@ -1,0 +1,153 @@
+/* 골프 기록 - 통합HUB 공통 ../styles.css 위에 얹는 추가 스타일 */
+
+/* ===== 라운드 회고 카드 ===== */
+.review-card { margin-bottom: 18px; }
+
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.review-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.review-item .review-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+.review-item .review-head strong { color: var(--text-primary); }
+.review-tags { display: flex; flex-direction: column; gap: 4px; }
+.review-tag {
+  font-size: 12.5px;
+  padding: 3px 0;
+}
+.review-tag .tag-label {
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+.review-tag.is-good .tag-label { background: var(--success-soft); color: var(--success); }
+.review-tag.is-bad .tag-label { background: rgba(239,68,68,0.12); color: var(--danger); }
+
+/* ===== 일별: 라운드 입력 폼 ===== */
+.round-add-form { margin-bottom: 14px; }
+.round-add-form .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.round-add-form input, .round-add-form select {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+.round-add-form #roundTime { width: 110px; }
+.round-add-form #roundCourse { flex: 1; min-width: 140px; }
+.round-add-form #roundHoles { width: 90px; }
+.round-add-form #roundPar { width: 110px; }
+.round-add-form #roundScore { width: 90px; }
+.round-add-form #roundGood, .round-add-form #roundBad, .round-add-form #roundMemo { flex: 1; min-width: 160px; }
+.round-add-form button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 일별: 라운드 리스트 ===== */
+.round-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.round-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.score-badge {
+  flex-shrink: 0;
+  min-width: 56px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  background: var(--success-soft);
+  color: var(--success);
+}
+.score-badge.is-over { background: rgba(239,68,68,0.12); color: var(--danger); }
+.score-badge .score-raw { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-top: 2px; }
+
+.round-main { flex: 1; min-width: 0; }
+.round-main .round-course { font-weight: 700; }
+.round-main .round-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.round-main .round-points { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; }
+.round-main .round-points .pt-good { color: var(--success); }
+.round-main .round-points .pt-bad { color: var(--danger); }
+.round-main .round-memo { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ===== 캘린더: 스코어 색점 ===== */
+.calendar-grid.score-cal .calendar-day .day-score {
+  font-size: 11px;
+  font-weight: 700;
+}
+.score-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+.score-dot--good { background: var(--success); }
+.score-dot--over { background: var(--danger); }
+.score-legend { justify-content: flex-start; gap: 16px; }
+.score-legend span { display: flex; align-items: center; }
+
+/* ===== 삭제 버튼 (라운드 항목 공통) ===== */
+.race-delete {
+  border: none; background: none; color: var(--text-secondary);
+  font-size: 15px; padding: 4px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.race-delete:hover { color: var(--danger); background: var(--accent-soft); }
+
+/* ===== 통계 타일 값 색상 (변화 추세) ===== */
+.stat-value.is-good-text { color: var(--success); }
+.stat-value.is-warn-text { color: var(--danger); }
+
+/* ===== 연간 요약 ===== */
+.year-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.year-summary-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.year-summary-item .ys-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.year-summary-item .ys-value { font-size: 20px; font-weight: 700; }

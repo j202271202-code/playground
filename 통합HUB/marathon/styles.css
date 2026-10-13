@@ -1,0 +1,184 @@
+/* 마라톤 훈련일지 - 통합HUB 공통 styles.css(../styles.css) 위에 얹는 추가 스타일.
+   stat-sub / ghost-btn / 차트 / 범례 공통 스타일은 ../styles.css로 옮겼음. */
+
+/* ===== 대회 일정 카드 ===== */
+.race-card { margin-bottom: 18px; }
+
+.race-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.race-add-form input[type="text"],
+.race-add-form input[type="date"],
+.race-add-form select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+.race-add-form input[type="text"]#raceName { flex: 1.4; min-width: 160px; }
+.race-add-form input[type="text"]#raceNote { flex: 1; min-width: 160px; }
+.race-add-form button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.race-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.race-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.race-item.is-past { opacity: 0.55; }
+.race-dday {
+  flex-shrink: 0;
+  min-width: 64px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.race-dday.is-urgent { background: rgba(239,68,68,0.14); color: var(--danger); }
+.race-dday.is-done { background: var(--border); color: var(--text-secondary); }
+.race-info { flex: 1; min-width: 0; }
+.race-info .race-name { font-weight: 600; }
+.race-info .race-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.race-delete {
+  border: none; background: none; color: var(--text-secondary);
+  font-size: 15px; padding: 4px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.race-delete:hover { color: var(--danger); background: var(--accent-soft); }
+
+/* ===== 일별: 체중 입력 ===== */
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.weight-row label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.weight-row input {
+  width: 100px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+.weight-row button {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.weight-saved-hint { font-size: 12px; color: var(--success); font-weight: 600; }
+
+/* ===== 일별: 러닝 기록 추가 ===== */
+.run-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.run-add-form input, .run-add-form select {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+.run-add-form #runDistance { width: 100px; }
+.run-add-form #runDuration { width: 120px; }
+.run-add-form #runMemo { flex: 1; min-width: 140px; }
+.run-add-form button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.run-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.run-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.run-type-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.run-main { flex: 1; min-width: 0; }
+.run-main .run-figures { font-weight: 700; font-size: 14px; }
+.run-main .run-figures .run-pace { color: var(--text-secondary); font-weight: 500; font-size: 12.5px; margin-left: 6px; }
+.run-main .run-memo { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ===== 캘린더 히트맵 (월별 뷰) ===== */
+.calendar-grid.heatmap .calendar-day {
+  background: color-mix(in srgb, var(--accent) calc(var(--heat, 0) * 1%), var(--bg));
+}
+.calendar-grid.heatmap .calendar-day .day-dist {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.calendar-grid.heatmap .calendar-day.is-outside { opacity: 0.35; }
+
+/* ===== 연간 요약 ===== */
+.year-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.year-summary-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.year-summary-item .ys-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.year-summary-item .ys-value { font-size: 20px; font-weight: 700; }
