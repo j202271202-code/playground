@@ -1,0 +1,45 @@
+:root {
+  --bg: #f6f3ee; --card: #ffffff; --ink: #2b2a28; --muted: #8a857c;
+  --accent: #3b82f6; --line: #e7e2d9;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1b1a18; --card: #262522; --ink: #eeeae3; --muted: #9b958a; --line: #37352f; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+  font-family: system-ui, "Malgun Gothic", sans-serif;
+  display: flex; justify-content: center; padding: 32px 16px;
+}
+main { width: 100%; max-width: 420px; }
+a.back { color: var(--muted); text-decoration: none; font-size: 14px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; margin-top: 16px; }
+h1 { font-size: 20px; margin: 0 0 16px; }
+
+form { display: flex; gap: 8px; margin-bottom: 12px; }
+input[type=text] {
+  flex: 1; font: inherit; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+button {
+  font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 8px 16px; border-radius: 999px; cursor: pointer;
+}
+form button { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.filters { display: flex; gap: 6px; margin-bottom: 12px; }
+.filter { padding: 4px 12px; font-size: 13px; }
+.filter.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+ul { list-style: none; margin: 0; padding: 0; }
+li {
+  display: flex; align-items: center; gap: 8px; padding: 8px;
+  border-radius: 8px;
+}
+li.done .text { text-decoration: line-through; color: var(--muted); }
+li .text { flex: 1; word-break: break-word; }
+li .del { border: none; background: none; color: var(--muted); padding: 0 4px; font-size: 16px; }
+.empty { color: var(--muted); font-size: 14px; text-align: center; padding: 8px; }
+
+.footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.footer button { padding: 4px 10px; font-size: 12px; }
