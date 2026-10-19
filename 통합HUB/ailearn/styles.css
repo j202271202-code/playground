@@ -1,0 +1,209 @@
+/* AI학습일지 - 통합HUB 공통 ../styles.css 위에 얹는 추가 스타일 */
+
+/* ===== 주제 색상 토큰 (라이트 기본값) ===== */
+:root {
+  --type-command: var(--accent);
+  --type-prompt: #1baf7a;
+  --type-automation: #eb6834;
+  --type-mcp: var(--success);
+  --type-debug: #e87ba4;
+  --type-book: #4a3aa7;
+  --type-etc: #eda100;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --type-prompt: #199e70;
+    --type-automation: #d95926;
+    --type-debug: #d55181;
+    --type-book: #9085e9;
+    --type-etc: #c98500;
+  }
+}
+:root[data-theme="dark"] {
+  --type-prompt: #199e70;
+  --type-automation: #d95926;
+  --type-debug: #d55181;
+  --type-book: #9085e9;
+  --type-etc: #c98500;
+}
+
+/* ===== 복습 카드 ===== */
+.review-card { margin-bottom: 18px; }
+.recall-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.recall-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: var(--bg);
+}
+.recall-item.is-weak { border-color: rgba(239,68,68,0.35); }
+.recall-item .recall-point {
+  font-weight: 700;
+  font-size: 14px;
+}
+.recall-item .recall-point::before { content: "⭐ "; }
+.recall-item .recall-meta {
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.understand-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.understand-badge.is-weak { background: rgba(239,68,68,0.12); color: var(--danger); }
+
+/* ===== 일별: 학습 기록 입력 ===== */
+.entry-add-form { margin-bottom: 16px; }
+.entry-add-form .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.entry-add-form select,
+.entry-add-form input,
+.entry-add-form textarea {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+.entry-add-form textarea { width: 100%; resize: vertical; min-height: 60px; }
+.entry-add-form #entryType { width: 170px; }
+.entry-add-form #entryTitle { flex: 1; min-width: 200px; }
+.entry-add-form #entryUnderstand { width: 150px; }
+.entry-add-form #entrySource { flex: 1; min-width: 200px; }
+.source-status { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+.source-status.is-ok { color: var(--success); }
+.source-status.is-error { color: var(--danger); }
+.entry-add-form #entryKeyPoint { flex: 1; min-width: 200px; }
+.entry-add-form #entryApplied { flex: 1; min-width: 200px; }
+.entry-add-form #entryAiReview { flex: 1; min-width: 200px; min-height: 42px; }
+.entry-add-form button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 학습 기록 리스트 ===== */
+.entry-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.entry-item {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.entry-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.type-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 7px;
+  color: #fff;
+  white-space: nowrap;
+}
+.entry-head .entry-title { font-weight: 700; }
+.entry-head .entry-date { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+.entry-content { font-size: 13px; color: var(--text-primary); white-space: pre-wrap; margin-bottom: 4px; }
+.entry-keypoint {
+  font-size: 12.5px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.entry-keypoint::before { content: "⭐ "; }
+.entry-applied {
+  font-size: 12.5px;
+  color: var(--success);
+  margin-top: 4px;
+}
+.entry-applied::before { content: "🛠 "; }
+.entry-source {
+  font-size: 12.5px;
+  margin-top: 4px;
+}
+.entry-source a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.entry-source a:hover { text-decoration: underline; }
+.entry-airreview {
+  font-size: 12.5px;
+  color: var(--text-primary);
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  white-space: pre-wrap;
+}
+.entry-airreview .ar-label {
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 2px;
+}
+.entry-delete-btn {
+  border: none; background: none; color: var(--text-secondary);
+  font-size: 15px; padding: 2px 6px; border-radius: 6px; flex-shrink: 0;
+}
+.entry-delete-btn:hover { color: var(--danger); background: var(--accent-soft); }
+
+/* ===== 검색창 ===== */
+.search-input {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 12.5px;
+  min-width: 220px;
+}
+
+/* ===== 월별: 캘린더 주제 색점 ===== */
+.calendar-grid.type-cal .calendar-day .day-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.type-legend { justify-content: flex-start; gap: 14px; flex-wrap: wrap; }
+.type-legend .type-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+.type-legend .type-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* ===== 연간 요약 ===== */
+.year-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.year-summary-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.year-summary-item .ys-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.year-summary-item .ys-value { font-size: 20px; font-weight: 700; }

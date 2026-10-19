@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>블로그 자동화 기록 - 통합HUB</title>
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">H</span>
+        <span class="brand-name">통합HUB</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">도구</div>
+        <a class="nav-item" href="../schedule/index.html">
+          <span class="nav-icon">📅</span>
+          <span>일정관리</span>
+        </a>
+        <a class="nav-item" href="../index.html">
+          <span class="nav-icon">✓</span>
+          <span>할 일 관리</span>
+        </a>
+        <a class="nav-item" href="../marathon/index.html">
+          <span class="nav-icon">🏃</span>
+          <span>마라톤 훈련일지</span>
+        </a>
+        <a class="nav-item" href="../golf/index.html">
+          <span class="nav-icon">⛳</span>
+          <span>골프 기록</span>
+        </a>
+        <a class="nav-item" href="../golflearn/index.html">
+          <span class="nav-icon">📝</span>
+          <span>골프학습일지</span>
+        </a>
+        <a class="nav-item" href="../ailearn/index.html">
+          <span class="nav-icon">🤖</span>
+          <span>AI학습일지</span>
+        </a>
+        <a class="nav-item is-active" href="index.html">
+          <span class="nav-icon">📰</span>
+          <span>블로그 자동화</span>
+        </a>
+        <button class="nav-item is-disabled" disabled>
+          <span class="nav-icon">＋</span>
+          <span>새 도구 (예정)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="todayLabel"></span>
+      </div>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="main">
+
+      <!-- 상단 바 -->
+      <header class="topbar">
+        <div>
+          <h1>블로그 자동화 기록 📰</h1>
+          <p class="subtitle" id="dateSubtitle"></p>
+        </div>
+      </header>
+
+      <!-- 통계 타일 -->
+      <section class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">총 발행 글</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 발행</div>
+          <div class="stat-value" id="statMonth">0</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">마지막 발행일</div>
+          <div class="stat-value stat-value--text" id="statLast">-</div>
+        </div>
+      </section>
+
+      <!-- 자동 기록 불러오기 -->
+      <section class="view-panel is-active">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>자동 기록 불러오기</h2>
+          </div>
+          <p class="hint-text">
+            Claude Code 파이프라인(researcher → writer → image-maker → assembler)이 글 한 편을 완성하면
+            <code>blog/blog-log.json</code>에 기록을 자동으로 남깁니다. 이 페이지를 <code>file://</code>로 직접 열었다면
+            브라우저 보안 정책 때문에 자동으로 못 읽어올 수 있어요 — 그럴 땐 아래 버튼으로 그 파일을 한 번 선택해 불러오면 됩니다.
+          </p>
+          <div class="autoload-row">
+            <button type="button" class="ghost-btn" id="autoFetchBtn">자동 새로고침 다시 시도</button>
+            <label class="ghost-btn file-label">
+              blog-log.json 파일 선택해서 불러오기
+              <input type="file" id="autoImportInput" accept="application/json" hidden />
+            </label>
+            <span class="autoload-status" id="autoloadStatus"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 수동 기록 추가 -->
+      <section class="view-panel is-active">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>새 글 수동 추가</h2>
+          </div>
+          <form class="post-add-form" id="postAddForm">
+            <input type="text" id="postTopic" placeholder="주제 (예: 클로드 코드의 핵심 기능 5가지)" autocomplete="off" required />
+            <input type="date" id="postDate" required />
+            <input type="text" id="postOutputDir" placeholder="출력 폴더 (예: output/클로드 코드의 핵심 기능 5가지)" autocomplete="off" />
+            <button type="submit">추가</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- 발행 기록 리스트 -->
+      <section class="view-panel is-active">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h2>발행 기록</h2>
+          </div>
+          <ul class="post-list" id="postList"></ul>
+          <p class="empty-state" id="postEmpty" hidden>아직 기록된 글이 없어요. 파이프라인을 돌리거나 위에서 직접 추가해보세요 ✨</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

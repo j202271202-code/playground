@@ -1,0 +1,109 @@
+/* 블로그 자동화 기록 - 통합HUB 공통 ../styles.css 위에 얹는 추가 스타일 */
+
+.stat-value--text { font-size: 18px; }
+
+.hint-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+.hint-text code {
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.autoload-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.file-label {
+  cursor: pointer;
+}
+.autoload-status {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+.autoload-status.is-error { color: var(--danger); }
+
+/* ===== 수동 추가 폼 ===== */
+.post-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.post-add-form input {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+}
+.post-add-form #postTopic { flex: 2; min-width: 220px; }
+.post-add-form #postDate { flex: 0 0 150px; }
+.post-add-form #postOutputDir { flex: 2; min-width: 220px; }
+.post-add-form button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ===== 발행 기록 리스트 ===== */
+.post-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.post-item {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.post-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 220px;
+}
+.source-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 7px;
+  color: #fff;
+  white-space: nowrap;
+}
+.source-auto { background: var(--accent); }
+.source-manual { background: var(--text-secondary); }
+.post-title { font-weight: 700; }
+.post-date { font-size: 12px; color: var(--text-secondary); }
+.post-link {
+  font-size: 12.5px;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.post-link:hover { text-decoration: underline; }
+.post-delete-btn {
+  border: none; background: none; color: var(--text-secondary);
+  font-size: 15px; padding: 2px 6px; border-radius: 6px; flex-shrink: 0;
+  margin-left: auto;
+}
+.post-delete-btn:hover { color: var(--danger); background: var(--accent-soft); }

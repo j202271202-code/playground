@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI학습일지 - 통합HUB</title>
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">H</span>
+        <span class="brand-name">통합HUB</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-section-label">도구</div>
+        <a class="nav-item" href="../schedule/index.html">
+          <span class="nav-icon">📅</span>
+          <span>일정관리</span>
+        </a>
+        <a class="nav-item" href="../index.html">
+          <span class="nav-icon">✓</span>
+          <span>할 일 관리</span>
+        </a>
+        <a class="nav-item" href="../marathon/index.html">
+          <span class="nav-icon">🏃</span>
+          <span>마라톤 훈련일지</span>
+        </a>
+        <a class="nav-item" href="../golf/index.html">
+          <span class="nav-icon">⛳</span>
+          <span>골프 기록</span>
+        </a>
+        <a class="nav-item" href="../golflearn/index.html">
+          <span class="nav-icon">📝</span>
+          <span>골프학습일지</span>
+        </a>
+        <a class="nav-item is-active" href="index.html">
+          <span class="nav-icon">🤖</span>
+          <span>AI학습일지</span>
+        </a>
+        <a class="nav-item" href="../blog/index.html">
+          <span class="nav-icon">📰</span>
+          <span>블로그 자동화</span>
+        </a>
+        <button class="nav-item is-disabled" disabled>
+          <span class="nav-icon">＋</span>
+          <span>새 도구 (예정)</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span id="todayLabel"></span>
+      </div>
+    </aside>
+
+    <!-- 메인 영역 -->
+    <main class="main">
+
+      <!-- 상단 바 -->
+      <header class="topbar">
+        <div>
+          <h1 id="greeting">🤖 AI학습일지</h1>
+          <p class="subtitle" id="dateSubtitle"></p>
+        </div>
+        <div class="view-switch" role="tablist">
+          <button class="view-btn is-active" data-view="daily">일별</button>
+          <button class="view-btn" data-view="monthly">월별</button>
+          <button class="view-btn" data-view="yearly">연간</button>
+        </div>
+      </header>
+
+      <!-- 통계 타일 -->
+      <section class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">🔥 연속 학습일</div>
+          <div class="stat-value" id="statStreak">0 일</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 학습 횟수</div>
+          <div class="stat-value" id="statMonthCount">0 회</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">통산 학습 횟수</div>
+          <div class="stat-value" id="statTotalCount">0 회</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">이번 달 평균 이해도</div>
+          <div class="stat-value" id="statAvgUnderstand">-</div>
+        </div>
+      </section>
+
+      <!-- 약점 우선 복습 (항상 보이는 카드) -->
+      <section class="panel-card review-card">
+        <div class="panel-card-header">
+          <h2>🔁 복습 — 이해도 낮은 것부터 우선</h2>
+          <button class="ghost-btn" id="shuffleReview">다시 뽑기</button>
+        </div>
+        <div class="recall-list" id="recallList"></div>
+        <p class="empty-state" id="recallEmpty" hidden>핵심 포인트를 남긴 기록이 쌓이면 여기서 복습할 수 있어요.</p>
+      </section>
+
+      <!-- 일별 뷰 -->
+      <section class="view-panel is-active" id="view-daily">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevDay">‹</button>
+            <h2 id="dailyTitle">오늘</h2>
+            <button class="nav-arrow" id="nextDay">›</button>
+          </div>
+
+          <form class="entry-add-form" id="entryAddForm">
+            <div class="form-row">
+              <select id="entryType">
+                <option value="command">명령어/슬래시커맨드</option>
+                <option value="prompt">프롬프트 작성법</option>
+                <option value="automation">자동화/스크립트</option>
+                <option value="mcp">MCP·도구연동</option>
+                <option value="debug">디버깅/트러블슈팅</option>
+                <option value="book">독서(책)</option>
+                <option value="etc">개념/기타</option>
+              </select>
+              <input type="text" id="entryTitle" placeholder="주제 / 제목 (예: Workflow 도구로 멀티에이전트 돌리기)" autocomplete="off" required />
+              <select id="entryUnderstand">
+                <option value="1">이해도 ⭐☆☆☆☆</option>
+                <option value="2">이해도 ⭐⭐☆☆☆</option>
+                <option value="3" selected>이해도 ⭐⭐⭐☆☆</option>
+                <option value="4">이해도 ⭐⭐⭐⭐☆</option>
+                <option value="5">이해도 ⭐⭐⭐⭐⭐</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <textarea id="entryContent" placeholder="배운 내용을 자세히 적어보세요" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <input type="text" id="entrySource" placeholder="🔗 출처 (유튜브 링크 또는 '책 이름 p.12~20', 선택)" autocomplete="off" />
+              <span class="source-status" id="sourceStatus"></span>
+            </div>
+            <div class="form-row">
+              <input type="text" id="entryKeyPoint" placeholder="⭐ 핵심 포인트 한 줄 (복습에 다시 등장해요)" autocomplete="off" />
+            </div>
+            <div class="form-row">
+              <input type="text" id="entryApplied" placeholder="🛠 실전 적용 메모 (실제로 써본 사례, 선택)" autocomplete="off" />
+            </div>
+            <div class="form-row">
+              <textarea id="entryAiReview" placeholder="🤖 AI 평가 메모 (Claude에게 물어보고 받은 평가를 붙여넣어보세요, 선택)" rows="2"></textarea>
+              <button type="submit">기록 추가</button>
+            </div>
+          </form>
+
+          <ul class="entry-list" id="entryList"></ul>
+          <p class="empty-state" id="entryEmpty" hidden>이 날은 학습 기록이 없어요.</p>
+        </div>
+      </section>
+
+      <!-- 월별 뷰 -->
+      <section class="view-panel" id="view-monthly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevMonth">‹</button>
+            <h2 id="calendarTitle">2026년 10월</h2>
+            <button class="nav-arrow" id="nextMonth">›</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div class="calendar-grid type-cal" id="calendarGrid"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>주제별 학습 횟수 (이번 달)</h2>
+          <div class="chart-wrap" id="typeBarChart"></div>
+          <div class="legend-row type-legend" id="typeLegend"></div>
+        </div>
+
+        <div class="panel-card" style="grid-column: 1 / -1;">
+          <div class="panel-card-header">
+            <h2 id="monthEntryListTitle">이번 달 학습 기록 전체</h2>
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 제목·내용·핵심포인트 검색" />
+          </div>
+          <ul class="entry-list" id="monthEntryList"></ul>
+          <p class="empty-state" id="monthEntryEmpty" hidden>이번 달엔 학습 기록이 없어요.</p>
+        </div>
+      </section>
+
+      <!-- 연간 뷰 -->
+      <section class="view-panel" id="view-yearly">
+        <div class="panel-card">
+          <div class="panel-card-header panel-card-header--calendar">
+            <button class="nav-arrow" id="prevYear">‹</button>
+            <h2 id="yearTitle">2026년</h2>
+            <button class="nav-arrow" id="nextYear">›</button>
+          </div>
+          <div class="chart-wrap" id="yearBarChart"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>연간 요약</h2>
+          <div class="year-summary-grid" id="yearSummary"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
